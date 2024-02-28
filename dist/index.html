@@ -8,10 +8,41 @@
 </head>
 <body>
 
-    <div id="sidebar">sidebar</div>
     <header id="header">to do</header>
-    <div id="main-container">to do stuff</div>
     
+    <div id="sidebar">sidebar</div>
+  
+    <div id="main-container">
+        <div class="todo-card" id="1">
+            <div class="header">
+                <span>Create To-Do App</span>
+                <div class="icon-holder">
+                    <ion-icon id='minimize'name="remove-outline"></ion-icon>
+                    <ion-icon id='delete' name="close-outline"></ion-icon>
+                </div>
+            </div>
+
+            <div class="due-date">
+                <h4>Due - 08-08-8888</h3>
+            </div>
+
+            <div class="created-date">
+                <h4>Created - 08-08-8888</h3>
+            </div>
+
+            <div class="project">
+                <h4>Name of project</h4>
+            </div>
+
+            <div class="main-content">
+                <p>A "Lorem ipsum dolor sit amet, consna aliqua. Ut enim ad commodo conscillum doloproident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+            </div>
+
+        </div>
+        <button id="add-tasks">+</button>
+    </div>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

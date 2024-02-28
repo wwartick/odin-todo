@@ -6,19 +6,127 @@
 body{
     min-height: 100vh;
     display: grid;
-    grid-template: 1fr 12fr / 1fr 3fr;
+    grid-template: 1fr 12fr / 1fr 5fr;
     justify-items: center;
     align-items: center;
+    
+}
+
+#sidebar,
+#header,
+#main-container{
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    height: 99.9%;
+    width: 99.9%;
 }
 
 #sidebar{
     grid-area: 1 / 1 / 3 / 2;
+    background-color: grey;
 }
 
-header{
+#header{
     grid-area: 1 / 2 / 2 / 2;
+    background-color: silver;
+    
 }
 
 #main-container{
-    grid-area: 2 / 2 / 3 / 3
+    grid-area: 2 / 2 / 3 / 3;
+    background-color: rgb(95, 90, 90);
+    background-image: url(../src/assets/josephine-bredehoft-KsAo8ouBn8A-unsplash.jpg);
+}
+
+
+#add-tasks{
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5rem;
+    width: 5rem;
+    border: none;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5rem;
+    right: 5rem;
+
+    &:hover{
+        scale: 1.05;
+        cursor: pointer;
+    }
+    &:active{
+        scale: 0.95;
+    }
+}
+
+.todo-card{
+    width: 18rem;
+    height: 18rem;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    margin: 2rem;
+    background-color: #172815;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 5px 5px 5px #172815a2;
+    
+    >* {
+        padding: 3.75px 10px;
+    }
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    background-color: #83781B;
+    color: wheat;
+    font-weight: 800;
+
+}
+
+.icon-holder {
+    user-select: none;
+
+    >ion-icon{
+        border-radius: 5px;
+        padding: 1px;
+    }
+    > ion-icon:hover{
+        background-color: red;
+        cursor: pointer;
+    }
+}
+
+.due-date{
+    background-color: #95B46A;
+    color: firebrick;
+    font-weight: 700;
+}
+
+.created-date{
+    background-color: #709255;
+    color: white;
+}
+
+.project{
+    background-color: #3E5622;
+    color: wheat;
+    font-weight: 600;
+}
+
+.main-content{
+    color: wheat;
+    width: 95%;
+}
+
+.hide-display{
+    display: none;
+}
+
+.fit-content{
+    height: fit-content;
 }
