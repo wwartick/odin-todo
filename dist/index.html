@@ -37,9 +37,36 @@
             <div class="main-content">
                 <p>A "Lorem ipsum dolor sit amet, consna aliqua. Ut enim ad commodo conscillum doloproident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
             </div>
-
         </div>
         <button id="add-tasks">+</button>
+
+        <dialog>
+            <form>
+                <label for="title">Task title</label><br>
+                <input type="text" id="title" name="title" required minlength='1' maxlength="150" ><br><br>
+                <label for="dueDate">When is this due?</label><br>
+                <input type="date" id="dueDate" name="dueDate" required><br><br>
+                <label for="projectName">What project is this a part of?</label><br>
+                <input type="text" name="projectName" id="projectName" required minlength='1'><br><br>
+                <label for="description">Describe this task</label><br>
+                <textarea name="description" id="description" required minlength='1'></textarea><br><br>
+                <label for="priority">Select priority</label><br>
+                <div class="priority-container">
+                    <div class="priority-color"></div>
+                    <select name="priority" id="priority">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <div class="priority-color"></div>
+                </div>
+                <div class="button-container">
+                    <button class="submit-button">Submit</button>
+                    <button type="button" class="close-button">Close</button>
+                </div>
+            </form>
+        </dialog>
+
     </div>
 
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
