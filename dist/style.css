@@ -13,7 +13,7 @@ body{
 }
 
 #sidebar,
-#title,
+#header,
 #task-container{
     height: 100%;
     width: 100%;
@@ -24,7 +24,7 @@ body{
     background-color: grey;
 }
 
-#title{
+#header{
     grid-area: 1 / 2 / 2 / 2;
     background-color: silver;
     
@@ -115,11 +115,19 @@ ion-icon:hover{
     background-color: #95B46A;
     color: firebrick;
     font-weight: 700;
+
+    >h4{
+        margin-right: 21px;
+    }
 }
 
 .createdDate{
     background-color: #709255;
     color: white;
+
+    >h4{
+        margin-right: -5px;
+    }
 }
 
 .project{
@@ -229,4 +237,24 @@ dialog{
         scale:.95
       }
     }
+}
+
+#titleEdit,
+#dueDateEdit,
+#createdDateEdit,
+#descriptionEdit,
+#projectEdit{
+    background-color: rgba(236, 214, 214, 0.589);
+    padding-left: 3px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+#descriptionEdit{
+    margin-top: 3px;
+    padding: 5px 7px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
 }

@@ -31,45 +31,121 @@ const cardClickHandler = function(e){
         editField(e);
     }
 
+    if(e.target.id === 'submit'){
+        submitEdit(e);
+    }
+
+}
+
+const submitEdit = function(e) {
+
+    console.log(e.target.parentNode)
+   
+    if(e.target.parentNode.parentNode.className === 'title'){
+        const cardOfTitle = e.target.parentNode.parentNode.parentNode;
+        const titleField = e.target.parentNode.parentNode;
+        const cardIdOfTitle= cardOfTitle.id;
+        const titleFieldInput = cardOfTitle.querySelector('input')
+        const titleInputValue = titleFieldInput.value
+        const titleInputId = titleFieldInput.id;
+        const slicedTitleId = titleInputId.slice(0,-4);
+        
+        if(titleInputValue === ''){
+            titleFieldInput.placeholder='REQUIRED FIELD'
+            titleFieldInput.style.backgroundColor='white'
+            return;
+        }
+
+        titleField.innerHTML = `<span>${titleInputValue}</span>
+        <div class="icon-holder">
+        <ion-icon id="edit" name="ellipsis-horizontal-outline" role="img" class="md hydrated"></ion-icon>
+        <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
+        <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
+        </div>`
+
+        toDoList[cardIdOfTitle].title = titleInputValue;
+        localStorage.setItem('tasks', JSON.stringify(toDoList))
+
+    } else if(!e.target.parentNode.classList.contains('description')){
+    const targetCard=e.target.parentNode.parentNode
+    const targetCardId=targetCard.id
+    const targetField = e.target.parentNode;
+    const targetFieldH4= targetField.querySelector('h4');
+    const targetFieldInput = targetField.querySelector('input')
+    const targetFieldEdit = targetFieldInput.value
+    const targetFieldId = targetFieldInput.id;
+    const slicedId = targetFieldId.slice(0, -4);
+
+    if(targetFieldEdit === '') {
+        targetFieldInput.placeholder='REQUIRED FIELD'
+        targetFieldInput.style.backgroundColor='firebrick'
+        return;
+    }
+
+    targetField.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>
+                                <h4> ${targetFieldH4.innerHTML} ${targetFieldEdit}  </h4>`
+    
+    toDoList[targetCardId][slicedId] = targetFieldEdit;
+    localStorage.setItem('tasks', JSON.stringify(toDoList))
+
+} else{
+    console.log('poop')
+}
 }
 
 const editField = function(e) {
     let targetCardIndex;
     let targetCardField;
     let targetCardFieldClass;
+    let inputType;
+
    if  (e.target.parentNode.parentNode.classList.contains('title')){
         targetCardIndex = e.target.parentNode.parentNode.parentNode.id;
-        targetCardField = e.target.parentNode.parentNode.className
-        //console.log(toDoList[targetCardIndex][targetCardField])
+        targetCardField = e.target.parentNode.parentNode
+
+        targetCardField.innerHTML =`<input type='text' style='width: 8rem; height: 80%; align-self: center' 
+                                    id=titleEdit value=${toDoList[targetCardIndex].title}>
+        <div class="icon-holder">
+        <ion-icon id='submit' name="enter-outline"></ion-icon>
+        <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
+        <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
+        </div>`
+
    } else{
         targetCardIndex = e.target.parentNode.parentNode.id;
         targetCardField = e.target.parentNode
         targetCardFieldClass = targetCardField.className;
 
-        //console.log(targetCardField.innerHTML)
-       //console.log(toDoList[targetCardIndex][targetCardFieldClass])
-     if(targetCardFieldClass != 'description' ) {
+     if(targetCardFieldClass !== 'description') {
+        
+        targetCardFieldClass === 'project' ? inputType = 'text' : inputType = 'date';
 
         let fieldLabel = targetCardField.querySelector('h4').textContent;
         let labelArray = Array.from(fieldLabel);
         let colonSplice = labelArray.indexOf(':');
         let slicedFieldLabel = labelArray.slice(0, colonSplice + 1).join('');
-        console.log(slicedFieldLabel);
-        
+
         targetCardField.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
-        <input style="margin-right: .5rem; width: 8rem;" type="text" id="search" value=${toDoList[targetCardIndex][targetCardFieldClass]}>
+        <input style="margin-right: .55rem; width: 7rem;" type=${inputType} id="${targetCardFieldClass}Edit" value=${toDoList[targetCardIndex][targetCardFieldClass]}>
         <h4> ${slicedFieldLabel} </h4>`
+
     }else{
-        console.log('poop');
+        targetCardField.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
+        <textarea id="descriptionEdit" name="descriptionEdit" rows="9" cols="30">${toDoList[targetCardIndex].description}</textarea>`
     } 
+
+
+    
 }
 }
 
 const deleteCard = function(e){
-    let index = e.target.parentNode.parentNode.parentNode.id;
-    toDoList.splice(index, 1);
+    
+    let selectedCard = e.target.parentNode.parentNode.parentNode
+    let cardIndex = selectedCard.id;
+    selectedCard.classList.add('hide-display');
+    toDoList.splice(cardIndex, 1);
     localStorage.setItem('tasks', JSON.stringify(toDoList));
-    location.reload();
 }
 
 
@@ -185,7 +261,7 @@ const showTasks = function(task) {
 
 const createTask = function(e) {
     let titleInput=dialog.querySelector('#title');
-    let dueDateInput= dialog.querySelector('#dueDate');
+    let dueDateInput= dialog.querySelector('#dueDateForm');
     let createdDate=new Date().toLocaleDateString(('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }));
     let projectNameInput=dialog.querySelector('#projectName');
     let descriptionInput=dialog.querySelector('#description');
