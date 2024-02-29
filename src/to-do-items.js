@@ -1,4 +1,4 @@
-class ToDo {
+class ToDoItem {
     constructor(title, priority,  dueDate, createdDate, project, description){
         this.title=title;
         this.priority=priority;
