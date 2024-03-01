@@ -8,11 +8,10 @@ const toDoList = JSON.parse(localStorage.getItem('tasks')) || [];
 let priorityColor='';
 
 class ToDoItem {
-    constructor(title, priority,  dueDate, createdDate, project, description){
+    constructor(title, priority,  dueDate, project, description){
         this.title=title;
         this.priority=priority;
         this.dueDate= dueDate;
-        this.createdDate=createdDate;
         this.project=project;    
         this.description=description;
     }
@@ -38,8 +37,6 @@ const cardClickHandler = function(e){
 }
 
 const submitEdit = function(e) {
-
-    console.log(e.target.parentNode)
    
     if(e.target.parentNode.parentNode.className === 'title'){
         const cardOfTitle = e.target.parentNode.parentNode.parentNode;
@@ -47,8 +44,6 @@ const submitEdit = function(e) {
         const cardIdOfTitle= cardOfTitle.id;
         const titleFieldInput = cardOfTitle.querySelector('input')
         const titleInputValue = titleFieldInput.value
-        const titleInputId = titleFieldInput.id;
-        const slicedTitleId = titleInputId.slice(0,-4);
         
         if(titleInputValue === ''){
             titleFieldInput.placeholder='REQUIRED FIELD'
@@ -89,7 +84,23 @@ const submitEdit = function(e) {
     localStorage.setItem('tasks', JSON.stringify(toDoList))
 
 } else{
-    console.log('poop')
+        const cardOfDescription = e.target.parentNode.parentNode;
+        const descriptionField = e.target.parentNode;
+        const cardIdOfDescription= cardOfDescription.id;
+        const descriptionFieldInput = cardOfDescription.querySelector('textarea')
+        const descriptionInputValue = descriptionFieldInput.value
+
+        if(descriptionInputValue === '') {
+            descriptionFieldInput.placeholder='REQUIRED FIELD'
+            descriptionFieldInput.style.backgroundColor='firebrick'
+            return;
+        }
+
+        descriptionField.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline" role="img" class="md hydrated"></ion-icon>
+                                        <p>${descriptionInputValue}</p>`
+
+        toDoList[cardIdOfDescription].description = descriptionInputValue;
+        localStorage.setItem('tasks', JSON.stringify(toDoList))
 }
 }
 
@@ -133,9 +144,6 @@ const editField = function(e) {
         targetCardField.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
         <textarea id="descriptionEdit" name="descriptionEdit" rows="9" cols="30">${toDoList[targetCardIndex].description}</textarea>`
     } 
-
-
-    
 }
 }
 
@@ -153,10 +161,8 @@ const minimizeCard = function(e){
 
     const iconName = e.target.name;
     const parentCard = e.target.parentNode.parentNode.parentNode;
-    const createdDateEl = parentCard.querySelector('.createdDate');
     const descriptionEl = parentCard.querySelector('.description');
 
-    createdDateEl.classList.toggle('hide-display');
     descriptionEl.classList.toggle('hide-display');
     parentCard.classList.toggle('fit-content');
     iconName === 'remove-outline' ? e.target.name = 'browsers-outline' : e.target.name = 'remove-outline'
@@ -188,9 +194,6 @@ const showTasks = function(task) {
 
     const dueDateDiv = document.createElement('div');
     const dueDateH4 = document.createElement('h4');
-
-    const createdDateDiv = document.createElement('div');
-    const createdDateH4 = document.createElement('h4');
     
     const projectDiv = document.createElement('div');
     const projectH4 = document.createElement('h4');
@@ -231,13 +234,6 @@ const showTasks = function(task) {
     dueDateH4.textContent= 'Due: ' + task.dueDate;
     dueDateDiv.innerHTML= '<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>';
     dueDateDiv.appendChild(dueDateH4);
-  
-
-    createdDateDiv.className= 'createdDate';
-    createdDateH4.textContent= 'Created: ' + task.createdDate;
-    createdDateDiv.innerHTML= '<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>';
-    createdDateDiv.appendChild(createdDateH4);
-    
 
     projectDiv.className='project';
     projectH4.textContent='Project: ' +  task.project;
@@ -252,7 +248,6 @@ const showTasks = function(task) {
 
     toDoCardDiv.appendChild(titleDiv);
     toDoCardDiv.appendChild(dueDateDiv);
-    toDoCardDiv.appendChild(createdDateDiv);
     toDoCardDiv.appendChild(projectDiv);
     toDoCardDiv.appendChild(descriptionDiv);
 
@@ -262,27 +257,23 @@ const showTasks = function(task) {
 const createTask = function(e) {
     let titleInput=dialog.querySelector('#title');
     let dueDateInput= dialog.querySelector('#dueDateForm');
-    let createdDate=new Date().toLocaleDateString(('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }));
     let projectNameInput=dialog.querySelector('#projectName');
     let descriptionInput=dialog.querySelector('#description');
     let priorityInput=dialog.querySelector('#priority');
 
     let dueDateValue = dueDateInput.value;
-
     let dateObject = new Date(dueDateValue);
-
-    let month=dateObject.getMonth() + 1;
-    let day = dateObject.getDate();
+    let month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+    let day = dateObject.getDate().toString().padStart(2, '0');
     let year = dateObject.getFullYear() ;
 
-    let formattedDueDate = `${month}/${day}/${year}`;
+    let formattedDueDate = `${year}-${month}-${day}`;
 
     e.preventDefault();
     let newToDo = new ToDoItem(
         titleInput.value,
          priorityInput.value,
           formattedDueDate,
-           createdDate,
             projectNameInput.value,
              descriptionInput.value
         );
@@ -291,6 +282,8 @@ const createTask = function(e) {
     showTasks(newToDo);
     localStorage.setItem('tasks', JSON.stringify(toDoList));
 }
+
+toDoList.forEach((task)=> console.log(task.project))
 
 toDoList.forEach((task) => showTasks(task));
 priority.addEventListener('change', changePriority)

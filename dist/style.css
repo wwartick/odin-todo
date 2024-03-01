@@ -104,7 +104,6 @@ ion-icon:hover{
 
 
 .dueDate,
-.createdDate,
 .project,
 .description{
     display: flex;
@@ -121,15 +120,6 @@ ion-icon:hover{
     }
 }
 
-.createdDate{
-    background-color: #709255;
-    color: white;
-
-    >h4{
-        margin-right: -5px;
-    }
-}
-
 .project{
     background-color: #3E5622;
     color: wheat;
@@ -140,6 +130,7 @@ ion-icon:hover{
     color: wheat;
     word-wrap: break-word;
     word-break: break-all;
+    padding-top: 7px;
 
     >p{
         width: 98%;
@@ -147,7 +138,7 @@ ion-icon:hover{
 
     >ion-icon{
         position: relative;
-        top: 9.75rem;
+        top: 10.75rem;
     }
 }
 
@@ -241,7 +232,6 @@ dialog{
 
 #titleEdit,
 #dueDateEdit,
-#createdDateEdit,
 #descriptionEdit,
 #projectEdit{
     background-color: rgba(236, 214, 214, 0.589);
