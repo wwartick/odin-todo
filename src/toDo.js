@@ -1,4 +1,5 @@
 import { getToDoList, setToDoList } from "./storage";
+import { getProjectList, showProjects, sortCards } from "./sidebar";
 
 const addTaskBtn = document.getElementById('add-tasks');
 const dialog = document.querySelector('dialog');
@@ -10,12 +11,13 @@ let toDoList = getToDoList();
 
 
 class ToDoItem {
-    constructor(title, priority,  dueDate, project, description){
+    constructor(title, priority,  dueDate, project, description, id){
         this.title=title;
         this.priority=priority;
         this.dueDate= dueDate;
         this.project=project;    
         this.description=description;
+        this.id = id;
     }
 }
 
@@ -42,53 +44,49 @@ export function clearBoard(){
 }
 
 const submitEdit = function(e) {
-   
-    if(e.target.parentNode.parentNode.className === 'title'){
-        const cardOfTitle = e.target.parentNode.parentNode.parentNode;
-        const titleField = e.target.parentNode.parentNode;
-        const cardIdOfTitle= cardOfTitle.id;
-        const titleFieldInput = cardOfTitle.querySelector('input')
-        const titleInputValue = titleFieldInput.value
-        
-        if(titleInputValue === ''){
-            titleFieldInput.placeholder='REQUIRED FIELD'
-            titleFieldInput.style.backgroundColor='white'
+    let targetField = e.target.parentNode;
+    if (targetField.classList.contains('icon-holder')) {
+        targetField = targetField.parentNode
+    }
+    const targetCard = targetField.parentNode;
+    const targetCardId = targetCard.id;
+    const targetInput = targetCard.querySelector('input');
+    const targetInputValue = targetInput.value;
+    const targetInputId = targetInput.id;
+    const slicedId = targetInputId.slice(0, -4);
+
+    if(targetField.classList.contains('title')){
+        if(targetInputValue === ''){
+            targetInput.placeholder='REQUIRED FIELD'
+            targetInput.style.backgroundColor='white'
+            return;
+        }
+        targetField.innerHTML = `<span>${targetInputValue}</span>
+                                 <div class="icon-holder">
+                                 <ion-icon id="edit" name="ellipsis-horizontal-outline" role="img" class="md hydrated"></ion-icon>
+                                 <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
+                                 <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
+                                 </div>`
+        toDoList[targetCardId].title = targetInputValue;
+        setToDoList(toDoList)
+    }
+
+    if(targetField.classList.contains('project') || targetField.classList.contains('dueDate')){
+        const targetFieldH4= targetField.querySelector('h4');
+        if(targetInputValue === '') {
+            targetInput.placeholder='REQUIRED FIELD'
+            targetInput.style.backgroundColor='firebrick'
             return;
         }
 
-        titleField.innerHTML = `<span>${titleInputValue}</span>
-        <div class="icon-holder">
-        <ion-icon id="edit" name="ellipsis-horizontal-outline" role="img" class="md hydrated"></ion-icon>
-        <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
-        <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
-        </div>`
-
-        toDoList[cardIdOfTitle].title = titleInputValue;
+        targetField.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>
+                                    <h4> ${targetFieldH4.innerHTML} ${targetInputValue}  </h4>`
+        
+        toDoList[targetCardId][slicedId] = targetInputValue;
         setToDoList(toDoList)
 
-    } else if(!e.target.parentNode.classList.contains('description')){
-    const targetCard=e.target.parentNode.parentNode
-    const targetCardId=targetCard.id
-    const targetField = e.target.parentNode;
-    const targetFieldH4= targetField.querySelector('h4');
-    const targetFieldInput = targetField.querySelector('input')
-    const targetFieldEdit = targetFieldInput.value
-    const targetFieldId = targetFieldInput.id;
-    const slicedId = targetFieldId.slice(0, -4);
-
-    if(targetFieldEdit === '') {
-        targetFieldInput.placeholder='REQUIRED FIELD'
-        targetFieldInput.style.backgroundColor='firebrick'
-        return;
-    }
-
-    targetField.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>
-                                <h4> ${targetFieldH4.innerHTML} ${targetFieldEdit}  </h4>`
-    
-    toDoList[targetCardId][slicedId] = targetFieldEdit;
-    setToDoList(toDoList)
-
-} else{
+}
+    if(targetField.classList.contains('ikashjndloahjs')){
         const cardOfDescription = e.target.parentNode.parentNode;
         const descriptionField = e.target.parentNode;
         const cardIdOfDescription= cardOfDescription.id;
@@ -100,10 +98,8 @@ const submitEdit = function(e) {
             descriptionFieldInput.style.backgroundColor='firebrick'
             return;
         }
-
         descriptionField.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline" role="img" class="md hydrated"></ion-icon>
                                         <p>${descriptionInputValue}</p>`
-
         toDoList[cardIdOfDescription].description = descriptionInputValue;
         setToDoList(toDoList)
 }
@@ -115,23 +111,22 @@ const editField = function(e) {
     let targetCardFieldClass;
     let inputType;
 
+
    if  (e.target.parentNode.parentNode.classList.contains('title')){
         targetCardIndex = e.target.parentNode.parentNode.parentNode.id;
         targetCardField = e.target.parentNode.parentNode
 
         targetCardField.innerHTML =`<input type='text' style='width: 8rem; height: 80%; align-self: center' 
-                                    id=titleEdit value=${toDoList[targetCardIndex].title}>
+                                    id=titleEdit value='${toDoList[targetCardIndex].title}'>
         <div class="icon-holder">
         <ion-icon id='submit' name="enter-outline"></ion-icon>
         <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
         <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
         </div>`
-
    } else{
         targetCardIndex = e.target.parentNode.parentNode.id;
         targetCardField = e.target.parentNode
         targetCardFieldClass = targetCardField.className;
-
      if(targetCardFieldClass !== 'description') {
         
         targetCardFieldClass === 'project' ? inputType = 'text' : inputType = 'date';
@@ -140,9 +135,11 @@ const editField = function(e) {
         let labelArray = Array.from(fieldLabel);
         let colonSplice = labelArray.indexOf(':');
         let slicedFieldLabel = labelArray.slice(0, colonSplice + 1).join('');
+        let initialInputValue = toDoList[targetCardIndex][targetCardFieldClass];
+
 
         targetCardField.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
-        <input style="margin-right: .55rem; width: 7rem;" type=${inputType} id="${targetCardFieldClass}Edit" value=${toDoList[targetCardIndex][targetCardFieldClass]}>
+        <input style="margin-right: .55rem; width: 7rem;" type=${inputType} id="${targetCardFieldClass}Edit" value='${initialInputValue}'>
         <h4> ${slicedFieldLabel} </h4>`
 
     }else{
@@ -205,15 +202,13 @@ export function showTasks(task) {
     const descriptionDiv = document.createElement('div');
     const descriptionP = document.createElement('p');
 
-
-
     toDoCardDiv.className='todo-card';
     toDoCardDiv.id=toDoList.indexOf(task);
     titleDiv.className='title';
     titleSpan.textContent = task.title;
     iconHolderDiv.className = 'icon-holder';
     iconHolderDiv.innerHTML = `<ion-icon id="edit" name="ellipsis-horizontal-outline"></ion-icon>
-                                <ion-icon id='minimize'name="remove-outline"></ion-icon>
+                               <ion-icon id='minimize'name="remove-outline"></ion-icon>
                                 <ion-icon id='delete' name="close-outline"></ion-icon>`
 
     if(task.priority === 'high') {
@@ -264,6 +259,7 @@ const createTask = function(e) {
     let projectNameInput=dialog.querySelector('#projectName');
     let descriptionInput=dialog.querySelector('#description');
     let priorityInput=dialog.querySelector('#priority');
+    let cardId = toDoList.length;
 
     let dueDateValue = dueDateInput.value;
     let dateObject = new Date(dueDateValue);
@@ -281,15 +277,17 @@ const createTask = function(e) {
          priorityInput.value,
           formattedDueDate,
             projectNameInput.value,
-             descriptionInput.value
+             descriptionInput.value,
+             cardId
         );
     toDoList.push(newToDo);
     dialog.close();
     showTasks(newToDo);
-    if(!projectList.has(projectNameInput.value)) {
+    if(!getProjectList().has(projectNameInput.value)) {
         showProjects(projectNameInput.value)
     }
-    setToDoList(toDoList)
+    setToDoList(toDoList);
+    console.log(toDoList);
 }
 
 export function initToDoApp(){

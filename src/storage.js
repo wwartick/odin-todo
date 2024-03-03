@@ -1,5 +1,11 @@
 export function getToDoList() {
-    return JSON.parse(localStorage.getItem('tasks')) || [];
+    const storedData = localStorage.getItem('tasks');
+    
+    if (storedData && storedData !== "undefined") {
+        return JSON.parse(storedData);
+    } else {
+        return [];
+    }
 }
 
 export function setToDoList(toDoList) {

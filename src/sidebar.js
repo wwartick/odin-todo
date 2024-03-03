@@ -6,8 +6,11 @@ const projectList = new Set();
 let reverse;
 let toDoList = getToDoList();
 
+export function getProjectList() {
+    return projectList;
+}
 
-const showProjects = function(project) {
+export function showProjects(project) {
     const projectContainerDiv = document.querySelector('.project-list-container');
     const projectH3 = document.createElement('h3');
 
@@ -16,19 +19,26 @@ const showProjects = function(project) {
     projectContainerDiv.appendChild(projectH3);
 }
 
-const sortCards = function(sortSpec){
+export function sortCards(sortSpec){
 
     if(sortSpec === 'All Projects') {
         clearBoard();
-        toDoList.forEach((task) => showTasks(task));
+        toDoList.forEach((task) => {
+           // const index = toDoList.findIndex((item) => item === task);
+          //  console.log(index);
+            //console.log(toDoList)
+            //console.log(task)
+            //console.log(toDoList.indexOf(task));
+            showTasks(task)
+        });
 
     } else if(sortSpec === 'Due Date'){
-        reverse ? toDoList.sort((a, b) => a.dueDate.localeCompare(b.dueDate)) :
-                  toDoList.sort((a, b) => b.dueDate.localeCompare(a.dueDate));
+        reverse ? toDoList = toDoList.sort((a, b) => a.dueDate.localeCompare(b.dueDate)):
+                  toDoList = toDoList.sort((a, b) => b.dueDate.localeCompare(a.dueDate));
+                  console.log(toDoList);
         reverse = !reverse;
         clearBoard();
         toDoList.forEach((task) => showTasks(task));
-        setToDoList(toDoList)
 
     }else if(sortSpec === 'Priority'){
         const priorityWeights = {high: 3, medium: 2, low: 1};
@@ -37,14 +47,13 @@ const sortCards = function(sortSpec){
         reverse = !reverse;
         clearBoard();
         toDoList.forEach((task) => showTasks(task)); 
-        setToDoList(toDoList)
 
     } else{
         let testArray = toDoList.filter(task => task.project === sortSpec);
         clearBoard();
         testArray.forEach((task) => showTasks(task)); 
-
     }
+
 }
 
 const sidebarClickHandler = function(e){
