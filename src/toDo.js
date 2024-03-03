@@ -11,13 +11,13 @@ let toDoList = getToDoList();
 
 
 class ToDoItem {
-    constructor(title, priority,  dueDate, project, description, id){
+    constructor(title, priority,  dueDate, project, description, taskId){
         this.title=title;
         this.priority=priority;
         this.dueDate= dueDate;
         this.project=project;    
         this.description=description;
-        this.id = id;
+        this.taskId = taskId;
     }
 }
 
@@ -203,7 +203,7 @@ export function showTasks(task) {
     const descriptionP = document.createElement('p');
 
     toDoCardDiv.className='todo-card';
-    toDoCardDiv.id=toDoList.indexOf(task);
+    toDoCardDiv.id=task.id;
     titleDiv.className='title';
     titleSpan.textContent = task.title;
     iconHolderDiv.className = 'icon-holder';
@@ -259,7 +259,7 @@ const createTask = function(e) {
     let projectNameInput=dialog.querySelector('#projectName');
     let descriptionInput=dialog.querySelector('#description');
     let priorityInput=dialog.querySelector('#priority');
-    let cardId = toDoList.length;
+    let taskId = toDoList.length;
 
     let dueDateValue = dueDateInput.value;
     let dateObject = new Date(dueDateValue);
@@ -278,7 +278,7 @@ const createTask = function(e) {
           formattedDueDate,
             projectNameInput.value,
              descriptionInput.value,
-             cardId
+             taskId
         );
     toDoList.push(newToDo);
     dialog.close();
@@ -287,7 +287,6 @@ const createTask = function(e) {
         showProjects(projectNameInput.value)
     }
     setToDoList(toDoList);
-    console.log(toDoList);
 }
 
 export function initToDoApp(){

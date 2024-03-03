@@ -20,35 +20,29 @@ export function showProjects(project) {
 }
 
 export function sortCards(sortSpec){
-
+    reverse = !reverse;
     if(sortSpec === 'All Projects') {
         clearBoard();
-        toDoList.forEach((task) => {
-           // const index = toDoList.findIndex((item) => item === task);
-          //  console.log(index);
-            //console.log(toDoList)
-            //console.log(task)
-            //console.log(toDoList.indexOf(task));
-            showTasks(task)
-        });
+        toDoList.forEach((task) => {showTasks(task)});
+    } 
 
-    } else if(sortSpec === 'Due Date'){
+    else if(sortSpec === 'Due Date'){
         reverse ? toDoList = toDoList.sort((a, b) => a.dueDate.localeCompare(b.dueDate)):
                   toDoList = toDoList.sort((a, b) => b.dueDate.localeCompare(a.dueDate));
-                  console.log(toDoList);
-        reverse = !reverse;
         clearBoard();
+        setToDoList(toDoList)
         toDoList.forEach((task) => showTasks(task));
+    }
 
-    }else if(sortSpec === 'Priority'){
+    else if(sortSpec === 'Priority'){
         const priorityWeights = {high: 3, medium: 2, low: 1};
         reverse ? toDoList.sort((a,b) => priorityWeights[a.priority] - priorityWeights[b.priority]):
                   toDoList.sort((a,b) => priorityWeights[b.priority] - priorityWeights[a.priority]);
-        reverse = !reverse;
         clearBoard();
+        setToDoList(toDoList)
         toDoList.forEach((task) => showTasks(task)); 
-
-    } else{
+    } 
+    else{
         let testArray = toDoList.filter(task => task.project === sortSpec);
         clearBoard();
         testArray.forEach((task) => showTasks(task)); 
