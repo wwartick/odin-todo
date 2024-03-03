@@ -1,3 +1,14 @@
+import { getToDoList, setToDoList } from "./storage";
+
+const addTaskBtn = document.getElementById('add-tasks');
+const dialog = document.querySelector('dialog');
+const closeBtn = dialog.querySelector('.close-button');
+const submitBtn = dialog.querySelector('.submit-button');
+const priority = document.getElementById('priority');
+const taskContainerDiv = document.querySelector('#task-container');
+let toDoList = getToDoList();
+
+
 class ToDoItem {
     constructor(title, priority,  dueDate, project, description){
         this.title=title;
@@ -53,7 +64,7 @@ const submitEdit = function(e) {
         </div>`
 
         toDoList[cardIdOfTitle].title = titleInputValue;
-        localStorage.setItem('tasks', JSON.stringify(toDoList))
+        setToDoList(toDoList)
 
     } else if(!e.target.parentNode.classList.contains('description')){
     const targetCard=e.target.parentNode.parentNode
@@ -75,7 +86,7 @@ const submitEdit = function(e) {
                                 <h4> ${targetFieldH4.innerHTML} ${targetFieldEdit}  </h4>`
     
     toDoList[targetCardId][slicedId] = targetFieldEdit;
-    localStorage.setItem('tasks', JSON.stringify(toDoList))
+    setToDoList(toDoList)
 
 } else{
         const cardOfDescription = e.target.parentNode.parentNode;
@@ -94,7 +105,7 @@ const submitEdit = function(e) {
                                         <p>${descriptionInputValue}</p>`
 
         toDoList[cardIdOfDescription].description = descriptionInputValue;
-        localStorage.setItem('tasks', JSON.stringify(toDoList))
+        setToDoList(toDoList)
 }
 }
 
@@ -147,7 +158,7 @@ const deleteCard = function(e){
     let cardIndex = selectedCard.id;
     selectedCard.classList.add('hide-display');
     toDoList.splice(cardIndex, 1);
-    localStorage.setItem('tasks', JSON.stringify(toDoList));
+    setToDoList(toDoList)
 }
 
 const minimizeCard = function(e){
@@ -278,5 +289,16 @@ const createTask = function(e) {
     if(!projectList.has(projectNameInput.value)) {
         showProjects(projectNameInput.value)
     }
-    localStorage.setItem('tasks', JSON.stringify(toDoList));
+    setToDoList(toDoList)
+}
+
+export function initToDoApp(){
+
+    toDoList.forEach((task) => showTasks(task));
+    priority.addEventListener('change', changePriority)
+    closeBtn.addEventListener("click", () => {dialog.close();});
+    addTaskBtn.addEventListener('click', () => {dialog.showModal();});
+    taskContainerDiv.addEventListener('click', cardClickHandler) 
+    submitBtn.addEventListener('click', createTask);
+
 }

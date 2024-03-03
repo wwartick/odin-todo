@@ -1,7 +1,10 @@
 import { showTasks, clearBoard } from "./todo";
+import { getToDoList, setToDoList } from './storage';
+
 const sidebarDiv = document.querySelector('#sidebar');
 const projectList = new Set();
 let reverse;
+let toDoList = getToDoList();
 
 
 const showProjects = function(project) {
@@ -18,14 +21,15 @@ const sortCards = function(sortSpec){
     if(sortSpec === 'All Projects') {
         clearBoard();
         toDoList.forEach((task) => showTasks(task));
+
     } else if(sortSpec === 'Due Date'){
         reverse ? toDoList.sort((a, b) => a.dueDate.localeCompare(b.dueDate)) :
                   toDoList.sort((a, b) => b.dueDate.localeCompare(a.dueDate));
-                   
         reverse = !reverse;
         clearBoard();
         toDoList.forEach((task) => showTasks(task));
-        localStorage.setItem('tasks', JSON.stringify(toDoList));
+        setToDoList(toDoList)
+
     }else if(sortSpec === 'Priority'){
         const priorityWeights = {high: 3, medium: 2, low: 1};
         reverse ? toDoList.sort((a,b) => priorityWeights[a.priority] - priorityWeights[b.priority]):
@@ -33,10 +37,10 @@ const sortCards = function(sortSpec){
         reverse = !reverse;
         clearBoard();
         toDoList.forEach((task) => showTasks(task)); 
-        localStorage.setItem('tasks', JSON.stringify(toDoList));
+        setToDoList(toDoList)
 
     } else{
-        testArray = toDoList.filter(task => task.project === sortSpec);
+        let testArray = toDoList.filter(task => task.project === sortSpec);
         clearBoard();
         testArray.forEach((task) => showTasks(task)); 
 
@@ -52,5 +56,9 @@ const sidebarClickHandler = function(e){
 }
 
 export function initSidebar(){
+
+    toDoList.forEach((task)=> projectList.add(task.project));
+    projectList.forEach((project) => showProjects(project)) 
+    sidebarDiv.addEventListener('click', sidebarClickHandler)
 
 }
