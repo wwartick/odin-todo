@@ -1,15 +1,3 @@
-const addTaskBtn = document.getElementById('add-tasks');
-const dialog = document.querySelector('dialog');
-const closeBtn = dialog.querySelector('.close-button');
-const submitBtn = dialog.querySelector('.submit-button');
-const priority = document.getElementById('priority');
-const taskContainerDiv = document.querySelector('#task-container');
-const sidebarDiv = document.querySelector('#sidebar');
-const toDoList = JSON.parse(localStorage.getItem('tasks')) || [];
-let priorityColor='';
-let reverse;
-const projectList = new Set();
-
 class ToDoItem {
     constructor(title, priority,  dueDate, project, description){
         this.title=title;
@@ -36,10 +24,9 @@ const cardClickHandler = function(e){
     if(e.target.id === 'submit'){
         submitEdit(e);
     }
-
 }
 
-const clearBoard = function() {
+export function clearBoard(){
     taskContainerDiv.textContent = '';
 }
 
@@ -163,7 +150,6 @@ const deleteCard = function(e){
     localStorage.setItem('tasks', JSON.stringify(toDoList));
 }
 
-
 const minimizeCard = function(e){
 
     const iconName = e.target.name;
@@ -193,7 +179,7 @@ const changePriority = function(e) {
     }
 }
 
-const showTasks = function(task) {
+export function showTasks(task) {
     const toDoCardDiv = document.createElement('div');
     const titleDiv = document.createElement('div');
     const titleSpan = document.createElement('span')
@@ -294,65 +280,3 @@ const createTask = function(e) {
     }
     localStorage.setItem('tasks', JSON.stringify(toDoList));
 }
-
-const showProjects = function(project) {
-    const projectContainerDiv = document.querySelector('.project-list-container');
-    const projectH3 = document.createElement('h3');
-
-    projectH3.textContent=project;
-    projectH3.id = `${project}Sorter`
-    projectContainerDiv.appendChild(projectH3);
-}
-
-const sortCards = function(sortSpec){
-
-    if(sortSpec === 'All Projects') {
-        clearBoard();
-        toDoList.forEach((task) => showTasks(task));
-    } else if(sortSpec === 'Due Date'){
-        reverse ? toDoList.sort((a, b) => a.dueDate.localeCompare(b.dueDate)) :
-                  toDoList.sort((a, b) => b.dueDate.localeCompare(a.dueDate));
-                   
-        reverse = !reverse;
-        clearBoard();
-        toDoList.forEach((task) => showTasks(task));
-        localStorage.setItem('tasks', JSON.stringify(toDoList));
-    }else if(sortSpec === 'Priority'){
-        const priorityWeights = {high: 3, medium: 2, low: 1};
-        reverse ? toDoList.sort((a,b) => priorityWeights[a.priority] - priorityWeights[b.priority]):
-                  toDoList.sort((a,b) => priorityWeights[b.priority] - priorityWeights[a.priority]);
-        reverse = !reverse;
-        clearBoard();
-        toDoList.forEach((task) => showTasks(task)); 
-        localStorage.setItem('tasks', JSON.stringify(toDoList));
-
-    } else{
-        testArray = toDoList.filter(task => task.project === sortSpec);
-        clearBoard();
-        testArray.forEach((task) => showTasks(task)); 
-
-    }
-
-
-
-
-}
-
-const sidebarClickHandler = function(e){
-    const target = e.target;
-    const targetContent = target.textContent;
-    if(target.tagName === 'H3'){
-        sortCards(targetContent)
-    }
-}
-
-toDoList.forEach((task)=> projectList.add(task.project));
-projectList.forEach((project) => showProjects(project)) 
-
-sidebarDiv.addEventListener('click', sidebarClickHandler)
-toDoList.forEach((task) => showTasks(task));
-priority.addEventListener('change', changePriority)
-closeBtn.addEventListener("click", () => {dialog.close();});
-addTaskBtn.addEventListener('click', () => {dialog.showModal();});
-taskContainerDiv.addEventListener('click', cardClickHandler) 
-submitBtn.addEventListener('click', createTask);
