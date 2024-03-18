@@ -27,6 +27,13 @@ body{
 #header{
     grid-area: 1 / 2 / 2 / 2;
     background-color: silver;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h1{
+        text-align: center;
+    }
     
 }
 
@@ -36,25 +43,25 @@ body{
     display: grid;
     grid-template-columns: repeat(auto-fill, 300px);
     grid-template-rows: repeat(auto-fill,300px);
+    align-items: center;
+    justify-content: center;
 }
 
 
 #add-tasks{
-    font-size: 3rem;
+    padding: .5rem 1rem;
+    width: 7rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 5rem;
-    width: 5rem;
     border: none;
-    border-radius: 50%;
-    position: fixed;
-    bottom: 5rem;
-    right: 5rem;
+    justify-self: flex-end;
+    margin-right: 2rem;
+    border-radius: 10px;
     box-shadow: 0 0 3px 3px rgba(128, 128, 128, 0.425);
 
     &:hover{
-        scale: 1.05;
+        scale: 1.1;
         cursor: pointer;
     }
     &:active{
@@ -72,7 +79,7 @@ body{
     background-color: #172815;
     border-radius: 5px;
     overflow: hidden;
-    box-shadow: 0 5px 5px 5px #172815a2;
+    box-shadow: 0 3px 3px 3px #172815a2;
     
     >* {
         padding: 3.75px 10px;
@@ -139,6 +146,12 @@ ion-icon:hover{
         position: relative;
         top: 10.75rem;
     }
+}
+
+.shrink-card{
+    transition: all 250ms linear ;
+    transform-origin: top left;
+    scale: 0;
 }
 
 .hide-display{
