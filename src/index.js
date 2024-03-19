@@ -9,7 +9,6 @@ const taskContainerDiv = document.querySelector('#task-container');
 const projectList = new Set();
 let toDoList = JSON.parse(localStorage.getItem('tasks')) || [];
 let reverse;
-let isOpen = false;
 
 class ToDoItem {
     constructor(title, priority,  dueDate, project, description){
@@ -22,26 +21,31 @@ class ToDoItem {
 }
 
 const cardClickHandler = function(e){
-    if(e.target.id === 'minimize'){
-        minimizeCard(e);
-    }
+    const openEditors = document.querySelectorAll('.open-editor');
+    if(e.target.closest('ion-icon')){
+        const targetIcon = e.target.closest('ion-icon')
+        if(targetIcon.id === 'minimize'){
+            minimizeCard(e);
+        }
 
-    if(e.target.id === 'delete'){
-        deleteCard(e);
-    }
+        if(targetIcon.id  === 'delete'){
+            deleteCard(e);
+        }
 
-    if(e.target.id === 'edit' && isOpen){
-        window.alert("Please submit previous edit")
-    }else if(!isOpen){
-        editField(e);
-    }
+        if(targetIcon.id  === 'edit' && openEditors.length){
+            window.alert("Please submit previous edit")
+        }else if(targetIcon.id  === 'edit' && !openEditors.length){
+            editField(e);
+        }
+    
 
-    if(e.target.id === 'submit'){
-        submitEdit(e);
+        if(targetIcon.id  === 'submit'){
+            submitEdit(e);
+        }
     }
 }
 
-export function clearBoard(){
+const clearBoard =  function(){
     taskContainerDiv.textContent = '';
 }
 
@@ -92,12 +96,9 @@ const submitEdit = function(e) {
                                     <h4> ${targetFieldH4.innerHTML} ${targetInputValue}  </h4>`
         toDoList[targetCardId][slicedId] = targetInputValue;
         localStorage.setItem('tasks', JSON.stringify(toDoList));
-        
+
         if(targetField.classList.contains('project')){
-            projectContainerDiv.textContent='';
-            projectList.clear();
-            toDoList.forEach((task)=> projectList.add(task.project));
-            projectList.forEach((project) => showProjects(project)) ;
+           refreshProjectList();
         }
     }
 
@@ -113,7 +114,6 @@ const submitEdit = function(e) {
         localStorage.setItem('tasks', JSON.stringify(toDoList));
         
 }
-    isOpen=false;
 }
 
 const editField = function(e) {
@@ -127,14 +127,15 @@ const editField = function(e) {
     
     if  (clickTarget.classList.contains('title')){
         clickTarget.innerHTML =`<input type='text' style='width: 8rem; height: 80%; align-self: center' 
-                                    id=titleEdit value='${toDoList[targetCardId].title}'>
+                                    id='titleEdit' maxlength="20" class='open-editor'
+                                    value='${toDoList[targetCardId].title}'>
                                     <div class="icon-holder">
                                     <ion-icon id='submit' name="enter-outline"></ion-icon>
                                     <ion-icon id="minimize" name="remove-outline" role="img" class="md hydrated"></ion-icon>
                                     <ion-icon id="delete" name="close-outline" role="img" class="md hydrated"></ion-icon>
                                     </div>`
                                     
-        isOpen=true;             
+                    
     } 
 
     if(clickTarget.classList.contains('project') || clickTarget.classList.contains('dueDate')) {
@@ -144,31 +145,35 @@ const editField = function(e) {
         let labelArray = Array.from(fieldLabel);
         let colonSplice = labelArray.indexOf(':');
         let slicedFieldLabel = labelArray.slice(0, colonSplice + 1).join('');
+        console.log(clickTarget.className);
+        console.log(toDoList);
       
         clickTarget.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
-        <input style="margin-right: .55rem; width: 7rem;" type=${inputType} id="${clickTarget.className}Edit" value='${toDoList[targetCardId][clickTarget.className]}'>
+        <input style="margin-right: .55rem; width: 7rem;" maxlength="20" type=${inputType} id="${clickTarget.className}Edit" class='open-editor' 
+        value='${toDoList[targetCardId][clickTarget.className]}'>
         <h4> ${slicedFieldLabel} </h4>`
-        isOpen=true;
+        
     }
 
     if(clickTarget.classList.contains('description')){
         clickTarget.innerHTML= `<ion-icon id='submit' name="enter-outline"></ion-icon>
-        <textarea id="descriptionEdit" name="descriptionEdit" rows="9" cols="30">${toDoList[targetCardId].description}</textarea>`
-        isOpen=true;
+        <textarea id="descriptionEdit" name="descriptionEdit" class='open-editor' rows="9" cols="30">${toDoList[targetCardId].description}</textarea>`
+       
     } 
-
-
 }
 
-
 const deleteCard = function(e){
-    let selectedCard = e.target.parentNode.parentNode.parentNode
+    let selectedCard = e.target.parentNode.parentNode.parentNode;
     let cardIndex = selectedCard.id;
-
     selectedCard.classList.add('shrink-card')
     setTimeout(() => {selectedCard.classList.add('hide-display');}, 260);
+    selectedCard.innerHTML='';
     toDoList.splice(cardIndex, 1);
     localStorage.setItem('tasks', JSON.stringify(toDoList));
+    refreshProjectList();
+    setTimeout(() => {location.reload();}, 275);
+    
+    
 }
 
 const minimizeCard = function(e){
@@ -194,11 +199,13 @@ const changePriority = function(e) {
     }
 
     if(priorityLevel === 'low') {
-        priorityColorDiv.forEach((divBox) => divBox.style.backgroundColor='lightblue')
+        priorityColorDiv.forEach((divBox) =>{
+        divBox.style.border='1px solid black'; 
+        divBox.style.backgroundColor='#F4D6CC'})
     }
 }
 
-export function showTasks(task) {
+const showTasks= function(task) {
     const toDoCardDiv = document.createElement('div');
     const titleDiv = document.createElement('div');
     const titleSpan = document.createElement('span')
@@ -232,7 +239,7 @@ export function showTasks(task) {
     }
 
     if(task.priority === 'low') {
-        titleDiv.style.backgroundColor = 'lightblue';
+        titleDiv.style.backgroundColor = '#F4D6CC';
         titleDiv.style.color = 'black';
     }
 
@@ -291,23 +298,39 @@ const createTask = function(e) {
         );
 
     toDoList.push(newToDo);
-    dialog.close();
+    closeModal();
     showTasks(newToDo);
     if(!projectList.has(projectNameInput.value)) {
+        projectList.add(projectNameInput.value)
         showProjects(projectNameInput.value)
     }
     localStorage.setItem('tasks', JSON.stringify(toDoList));
 }
 
-export function showProjects(project) {
-    const projectH3 = document.createElement('h3');
+function closeModal() {
+    title.value ='';
+    dueDateForm.value ='';
+    projectName.value ='';
+    description.value='';
+    dialog.close();
+}
 
+
+const showProjects = function(project) {
+    const projectH3 = document.createElement('h3');
     projectH3.textContent=project;
     projectH3.id = `${project}Sorter`
     projectContainerDiv.appendChild(projectH3);
 }
 
-export function sortCards(sortSpec){
+const refreshProjectList = function(){
+    projectContainerDiv.textContent='';
+    projectList.clear();
+    toDoList.forEach((task)=> projectList.add(task.project));
+    projectList.forEach((project) => showProjects(project))
+}
+
+const sortCards = function(sortSpec){
     reverse = !reverse;
     if(sortSpec === 'All Projects') {
         clearBoard();
